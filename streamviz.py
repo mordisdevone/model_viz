@@ -1,10 +1,6 @@
 import streamlit as st
 from PIL import Image
 
-
-import streamlit as st
-from PIL import Image
-
 # Set Streamlit page configuration to wide mode
 st.set_page_config(layout="wide")
 
@@ -24,15 +20,15 @@ def app():
     selected_date = st.selectbox("Select Date", ['20220504', 'AnotherDate'])
 
     # Dropdown for Variable selection
-    selected_variable = st.selectbox("Select Variable", ['Temperature', 'WindSpeed'])
+    selected_variable = st.selectbox("Select Variable", ['Temperature', 'WindSpeed', 'SurfacePressure'])
 
     # Slider for Hour selection
     selected_hour = st.slider("Select Hour", 0, 23, format="Hour %02d")
 
     # File paths based on selections
-    diff_path = f'plots/DIFF_{selected_variable}_{selected_date}_Hour_{selected_hour:02d}_.png'
-    hrrr_path = f'plots/HRRR_{selected_variable}_{selected_date}_Hour_{selected_hour:02d}_.png'
-    rtma_path = f'plots/RTMA_{selected_variable}_{selected_date}_Hour_{selected_hour:02d}_.png'
+    diff_path = f'plots2/DIFF_{selected_variable}_{selected_date}_Hour_{selected_hour:02d}_.png'
+    hrrr_path = f'plots2/HRRR_{selected_variable}_{selected_date}_Hour_{selected_hour:02d}_.png'
+    rtma_path = f'plots2/RTMA_{selected_variable}_{selected_date}_Hour_{selected_hour:02d}_.png'
 
     # Load and display images
     col1, col2, col3 = st.columns([1,1,1])  # Equal width columns
