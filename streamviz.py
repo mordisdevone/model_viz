@@ -1,9 +1,11 @@
 import streamlit as st
 from PIL import Image
+import pandas as pd
 
-# Set Streamlit page configuration to wide mode
+# Assuming urls_df is accessible or loaded here
+# urls_df = pd.read_csv('your_urls_data.csv')
+
 st.set_page_config(layout="wide")
-
 
 def load_image(image_path):
     try:
@@ -16,19 +18,32 @@ def load_image(image_path):
 def app():
     st.title('Weather Data Visualization')
 
+    urls_df = pd.read_csv('urls_df.csv')
     # Dropdown for Date selection
-    selected_date = st.selectbox("Select Date", ['20220504', 'AnotherDate'])
+
+    # Dropdown for Date selection (use HRRR Date as start date)
+    available_dates = sorted(urls_df['HRRR Date'].unique())
+    selected_date = st.selectbox("Select Date", available_dates)
 
     # Dropdown for Variable selection
+    # Assuming the variable is consistent across the DataFrame, otherwise adjust
     selected_variable = st.selectbox("Select Variable", ['Temperature', 'WindSpeed', 'SurfacePressure'])
 
-    # Slider for Hour selection
-    selected_hour = st.slider("Select Hour", 0, 23, format="Hour %02d")
+    # Slider for Hour selection (0 to 36 hours)
+    selected_hour = st.slider("Select Hour", 0, 36)
 
-    # File paths based on selections
-    diff_path = f'plots2/DIFF_{selected_variable}_{selected_date}_Hour_{selected_hour:02d}_.png'
-    hrrr_path = f'plots2/HRRR_{selected_variable}_{selected_date}_Hour_{selected_hour:02d}_.png'
-    rtma_path = f'plots2/RTMA_{selected_variable}_{selected_date}_Hour_{selected_hour:02d}_.png'
+    # Function to get plot names from the DataFrame
+    def get_plot_names(date, hour):
+        # Retrieve the row for the selected date and hour
+        row = urls_df[(urls_df['HRRR Date'] == date) & (urls_df['HRRR F Value'] == hour)].iloc[0]
+        return row['Diff Plot Name'], row['HRRR Plot Name'], row['RTMA Plot Name']
+
+    diff_plot_name, hrrr_plot_name, rtma_plot_name = get_plot_names(selected_date, selected_hour)
+
+    # Construct file paths for the plots
+    diff_path = f'plotsFIN/{diff_plot_name}.png'
+    hrrr_path = f'plotsFIN/{hrrr_plot_name}.png'
+    rtma_path = f'plotsFIN/{rtma_plot_name}.png'
 
     # Load and display images
     col1, col2, col3 = st.columns([1,1,1])  # Equal width columns
@@ -38,7 +53,6 @@ def app():
         st.image(load_image(hrrr_path), caption='HRRR Plot', use_column_width=True)
     with col3:
         st.image(load_image(rtma_path), caption='RTMA Plot', use_column_width=True)
-
 
 if __name__ == "__main__":
     app()
